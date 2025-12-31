@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Start message-hooks"
+# ============================================================
+# Experimental guard
+# ============================================================
+
+# 明示的に有効化したときのみ実行
+if [[ "${REPRO_HOOK_ENABLED:-0}" != "1" ]]; then
+  exit 0
+fi
+
+# git hook の引数
+# $1 = commit message file
+# $2 = commit source
+# $3 = commit SHA (if amend)
+COMMIT_MSG_FILE="$1"
+
+echo "[repro] prepare-commit-msg hook activated" >&2
+echo "[repro] commit msg file: $COMMIT_MSG_FILE" >&2
+
+# ============================================================
+# Call repro script
+# ============================================================
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+REPRO_SCRIPT="$REPO_ROOT/scripts/repro.sh"
+
+if [[ ! -x "$REPRO_SCRIPT" ]]; then
+  echo "[repro] ERROR: repro script not found or not executable" >&2
+  exit 1
+fi
+
+"$REPRO_SCRIPT"
+
+# ============================================================
+# Detect index mutation and abort if needed
+# ============================================================
+
+if ! git diff --cached --quiet; then
+  echo "[repro] ERROR: index was modified during prepare-commit-msg" >&2
+  echo "[repro] aborting commit to preserve user intent" >&2
+  exit 1
+fi
+
+exit 0
+
