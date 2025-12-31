@@ -1,0 +1,30 @@
+C: /repro-index-bugs > git commit -m "changed"
+Start message-hooks
+[repro] prepare-commit-msg hook activated
+[repro] commit msg file: .git/COMMIT_EDITMSG
+== Repro: prompt + blank line + git diff --cached ==
+
+## git status (initial)
+A  hello2
+ M scripts/repro.sh
+
+## index BEFORE
+9af142bbce0effe226a22361485392917edba583
+
+## running opencode (agent input)
+
+**Proposed commit message (Conventional Commits)**
+
+- `chore: add hello2 placeholder file`
+
+Optional body (if you want a bit more gwhyh):
+
+- `Adds an empty file for future use / to keep repository structure in place.`
+
+
+## index AFTER
+24d4e051d0e457eacb0d59887d05a4e8b43f9688
+
+## index tree diff
+ERROR: index tree CHANGED
+C: /repro-index-bugs >

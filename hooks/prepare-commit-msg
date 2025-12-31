@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
+# This hook is intentionally minimal.
+# It only calls scripts/repro.sh to reproduce
+# git index modification during prepare-commit-msg.
 set -euo pipefail
-echo "Start message-hooks"
+
 # ============================================================
 # Experimental guard
 # ============================================================
 
-# 明示的に有効化したときのみ実行
+# Only execute when explicitly enabled
 if [[ "${REPRO_HOOK_ENABLED:-0}" != "1" ]]; then
   exit 0
 fi
 
-# git hook の引数
+# Git hook arguments
 # $1 = commit message file
 # $2 = commit source
 # $3 = commit SHA (if amend)
